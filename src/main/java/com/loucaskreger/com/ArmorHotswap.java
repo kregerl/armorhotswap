@@ -19,9 +19,11 @@ public class ArmorHotswap {
 	}
 
 	private void setupCommon(final FMLCommonSetupEvent event) {
+
 	}
 
 	private void setupClient(final FMLClientSetupEvent event) {
+
 	}
 
 }

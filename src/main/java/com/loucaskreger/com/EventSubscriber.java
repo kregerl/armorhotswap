@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,19 +25,42 @@ public class EventSubscriber {
 			Minecraft mc = Minecraft.getInstance();
 			PlayerEntity player = mc.player;
 			PlayerController pc = mc.playerController;
+			RayTraceResult result = mc.objectMouseOver;
+			System.out.println(result.getType().toString());
 
-			ItemStack stack = player.inventory.getCurrentItem();
-			int currentItemIndex = player.inventory.mainInventory.indexOf(stack);
+			switch (result.getType()) {
 
-			EquipmentSlotType equipmentSlotType = MobEntity.getSlotForItemStack(stack);
-			int armorIndexSlot = determineIndex(equipmentSlotType);
+			case MISS:
+			case BLOCK:
+				swapArmor(mc, player, pc, event);
+			case ENTITY:
+				break;
 
-			if (event.getHand() == Hand.MAIN_HAND && armorIndexSlot != -1) {
-				player.playSound(stack.getItem() == Items.ELYTRA ? SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA
-						: SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
-				pc.windowClick(mc.player.container.windowId, armorIndexSlot, currentItemIndex, ClickType.SWAP, player);
 			}
 
+		}
+	}
+
+	/**
+	 * Swap the armor to the correct slots.
+	 * 
+	 * @param mc
+	 * @param player
+	 * @param pc
+	 * @param event
+	 */
+	private static void swapArmor(Minecraft mc, PlayerEntity player, PlayerController pc,
+			InputEvent.ClickInputEvent event) {
+		ItemStack stack = player.inventory.getCurrentItem();
+		int currentItemIndex = player.inventory.mainInventory.indexOf(stack);
+
+		EquipmentSlotType equipmentSlotType = MobEntity.getSlotForItemStack(stack);
+		int armorIndexSlot = determineIndex(equipmentSlotType);
+
+		if (event.getHand() == Hand.MAIN_HAND && armorIndexSlot != -1) {
+			player.playSound(stack.getItem() == Items.ELYTRA ? SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA
+					: SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+			pc.windowClick(mc.player.container.windowId, armorIndexSlot, currentItemIndex, ClickType.SWAP, player);
 		}
 	}
 
