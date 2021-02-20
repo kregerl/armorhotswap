@@ -26,7 +26,6 @@ public class EventSubscriber {
 			PlayerEntity player = mc.player;
 			PlayerController pc = mc.playerController;
 			RayTraceResult result = mc.objectMouseOver;
-			System.out.println(result.getType().toString());
 
 			switch (result.getType()) {
 
