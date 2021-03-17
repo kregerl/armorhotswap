@@ -1,5 +1,8 @@
 package com.loucaskreger.com;
 
+import com.loucaskreger.com.config.ClientConfig;
+import com.loucaskreger.com.config.Config;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerController;
 import net.minecraft.entity.MobEntity;
@@ -13,11 +16,19 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 
 @Mod.EventBusSubscriber(modid = ArmorHotswap.MOD_ID, value = Dist.CLIENT)
 public class EventSubscriber {
+
+	@SubscribeEvent
+	public static void onClientTick(final ClientTickEvent event) {
+		ForgeIngameGui.renderFood = false;
+	}
 
 	@SubscribeEvent
 	public static void onPlayerRightClick(final InputEvent.ClickInputEvent event) {
@@ -26,17 +37,26 @@ public class EventSubscriber {
 			PlayerEntity player = mc.player;
 			PlayerController pc = mc.playerController;
 			RayTraceResult result = mc.objectMouseOver;
+			if (!ClientConfig.swapBlacklist.get()
+					.contains(player.inventory.getCurrentItem().getItem().getRegistryName().toString())) {
+				switch (result.getType()) {
 
-			switch (result.getType()) {
+				case MISS:
+				case BLOCK:
+					swapArmor(mc, player, pc, event);
+				case ENTITY:
+					break;
 
-			case MISS:
-			case BLOCK:
-				swapArmor(mc, player, pc, event);
-			case ENTITY:
-				break;
-
+				}
 			}
 
+		}
+	}
+
+	@SubscribeEvent
+	public static void onModConfigEvent(final ModConfig.ModConfigEvent configEvent) {
+		if (configEvent.getConfig().getSpec() == Config.CLIENT_SPEC) {
+			Config.bakeConfig();
 		}
 	}
 
