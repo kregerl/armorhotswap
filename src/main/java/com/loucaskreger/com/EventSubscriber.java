@@ -2,7 +2,6 @@ package com.loucaskreger.com;
 
 import com.loucaskreger.com.config.ClientConfig;
 import com.loucaskreger.com.config.Config;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerController;
 import net.minecraft.entity.MobEntity;
@@ -15,9 +14,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -25,18 +24,21 @@ import net.minecraftforge.fml.config.ModConfig;
 @Mod.EventBusSubscriber(modid = ArmorHotswap.MOD_ID, value = Dist.CLIENT)
 public class EventSubscriber {
 
+	private static boolean skip = false;
+
 	@SubscribeEvent
 	public static void onClientTick(final ClientTickEvent event) {
 		ForgeIngameGui.renderFood = false;
 	}
 
 	@SubscribeEvent
-	public static void onPlayerRightClick(final InputEvent.ClickInputEvent event) {
-		if (event.isUseItem()) {
+	public static void onPlayerInteract(final PlayerInteractEvent.RightClickItem event) {
+		if (!skip) {
 			Minecraft mc = Minecraft.getInstance();
 			PlayerEntity player = mc.player;
 			PlayerController pc = mc.playerController;
 			RayTraceResult result = mc.objectMouseOver;
+
 			if (!ClientConfig.swapBlacklist.get()
 					.contains(player.inventory.getCurrentItem().getItem().getRegistryName().toString())) {
 				switch (result.getType()) {
@@ -49,7 +51,9 @@ public class EventSubscriber {
 
 				}
 			}
-
+			skip = true;
+		} else {
+			skip = false;
 		}
 	}
 
@@ -69,10 +73,9 @@ public class EventSubscriber {
 	 * @param event
 	 */
 	private static void swapArmor(Minecraft mc, PlayerEntity player, PlayerController pc,
-			InputEvent.ClickInputEvent event) {
+			PlayerInteractEvent.RightClickItem event) {
 		ItemStack stack = player.inventory.getCurrentItem();
 		int currentItemIndex = player.inventory.mainInventory.indexOf(stack);
-
 		EquipmentSlotType equipmentSlotType = MobEntity.getSlotForItemStack(stack);
 		int armorIndexSlot = determineIndex(equipmentSlotType);
 
