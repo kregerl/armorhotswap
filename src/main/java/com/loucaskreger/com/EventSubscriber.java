@@ -12,6 +12,7 @@ import net.minecraft.inventory.container.ClickType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
@@ -24,11 +25,9 @@ import net.minecraftforge.fml.config.ModConfig;
 @Mod.EventBusSubscriber(modid = ArmorHotswap.MOD_ID)
 public class EventSubscriber {
 
-	static boolean skip = false;
-
 	@SubscribeEvent
 	public static void onPlayerInteract(final PlayerInteractEvent.RightClickItem event) {
-		if (!skip) {
+		if (event.getItemStack().getItem() instanceof ArmorItem || event.getItemStack().getItem() == Items.ELYTRA) {
 			Minecraft mc = Minecraft.getInstance();
 			PlayerEntity player = mc.player;
 			PlayerController pc = mc.playerController;
@@ -40,16 +39,13 @@ public class EventSubscriber {
 
 				case MISS:
 				case BLOCK:
-					swapMainhandArmor(mc, player, pc, event.getHand());
-					skip = true;
+					swapMainhandArmor(mc, player, pc, event);
 				case ENTITY:
 					break;
 
 				}
 
 			}
-		} else {
-			skip = false;
 		}
 
 	}
@@ -69,8 +65,9 @@ public class EventSubscriber {
 	 * @param pc
 	 * @param event
 	 */
-	private static void swapMainhandArmor(Minecraft mc, PlayerEntity player, PlayerController pc, Hand hand) {
-		if (hand == Hand.MAIN_HAND) {
+	private static void swapMainhandArmor(Minecraft mc, PlayerEntity player, PlayerController pc,
+			PlayerInteractEvent.RightClickItem event) {
+		if (event.getHand() == Hand.MAIN_HAND && event.getWorld().isRemote) {
 			ItemStack stack = player.inventory.getCurrentItem();
 			int currentItemIndex = player.inventory.mainInventory.indexOf(stack);
 			EquipmentSlotType equipmentSlotType = MobEntity.getSlotForItemStack(stack);
