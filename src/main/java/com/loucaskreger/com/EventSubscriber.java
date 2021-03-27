@@ -2,34 +2,29 @@ package com.loucaskreger.com;
 
 import com.loucaskreger.com.config.ClientConfig;
 import com.loucaskreger.com.config.Config;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerController;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.ClickType;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 
-@Mod.EventBusSubscriber(modid = ArmorHotswap.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = ArmorHotswap.MOD_ID)
 public class EventSubscriber {
 
-	private static boolean skip = false;
-
-	@SubscribeEvent
-	public static void onClientTick(final ClientTickEvent event) {
-		ForgeIngameGui.renderFood = false;
-	}
+	static boolean skip = false;
 
 	@SubscribeEvent
 	public static void onPlayerInteract(final PlayerInteractEvent.RightClickItem event) {
@@ -45,16 +40,18 @@ public class EventSubscriber {
 
 				case MISS:
 				case BLOCK:
-					swapArmor(mc, player, pc, event);
+					swapMainhandArmor(mc, player, pc, event.getHand());
+					skip = true;
 				case ENTITY:
 					break;
 
 				}
+
 			}
-			skip = true;
 		} else {
 			skip = false;
 		}
+
 	}
 
 	@SubscribeEvent
@@ -72,19 +69,45 @@ public class EventSubscriber {
 	 * @param pc
 	 * @param event
 	 */
-	private static void swapArmor(Minecraft mc, PlayerEntity player, PlayerController pc,
-			PlayerInteractEvent.RightClickItem event) {
-		ItemStack stack = player.inventory.getCurrentItem();
-		int currentItemIndex = player.inventory.mainInventory.indexOf(stack);
-		EquipmentSlotType equipmentSlotType = MobEntity.getSlotForItemStack(stack);
-		int armorIndexSlot = determineIndex(equipmentSlotType);
+	private static void swapMainhandArmor(Minecraft mc, PlayerEntity player, PlayerController pc, Hand hand) {
+		if (hand == Hand.MAIN_HAND) {
+			ItemStack stack = player.inventory.getCurrentItem();
+			int currentItemIndex = player.inventory.mainInventory.indexOf(stack);
+			EquipmentSlotType equipmentSlotType = MobEntity.getSlotForItemStack(stack);
+			int armorIndexSlot = determineIndex(equipmentSlotType);
 
-		if (event.getHand() == Hand.MAIN_HAND && armorIndexSlot != -1) {
-			player.playSound(stack.getItem() == Items.ELYTRA ? SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA
-					: SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
-			pc.windowClick(mc.player.container.windowId, armorIndexSlot, currentItemIndex, ClickType.SWAP, player);
+			if (armorIndexSlot != -1) {
+				SoundEvent sound = getSoundEvent(stack);
+				if (sound != null) {
+					player.playSound(sound, 1f, 1f);
+				} else {
+					player.playSound(SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 1f, 1f);
+				}
+				pc.windowClick(mc.player.container.windowId, armorIndexSlot, currentItemIndex, ClickType.SWAP, player);
+			}
 		}
 	}
+
+	// For offhand
+//	private static void swapOffhandArmor(Minecraft mc, PlayerEntity player, PlayerController pc, Hand hand) {
+//		ItemStack stack = player.getHeldItemOffhand();
+//		// Offhand index
+//		int currentItemIndex = 45;
+//		EquipmentSlotType equipmentSlotType = MobEntity.getSlotForItemStack(stack);
+//		int armorIndexSlot = determineIndex(equipmentSlotType);
+//
+//		if (armorIndexSlot != -1) {
+//			SoundEvent sound = getSoundEvent(stack);
+//			if (sound != null) {
+//				player.playSound(sound, 1f, 1f);
+//			} else {
+//				player.playSound(SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 1f, 1f);
+//			}
+//			System.out.println(armorIndexSlot);
+//			System.out.println(currentItemIndex);
+//			pc.windowClick(mc.player.container.windowId, armorIndexSlot, currentItemIndex, ClickType.SWAP, player);
+//		}
+//	}
 
 	/**
 	 * Inventory indicies go as follows: <br>
@@ -112,6 +135,15 @@ public class EventSubscriber {
 		default:
 			return -1;
 		}
+	}
+
+	private static SoundEvent getSoundEvent(ItemStack stack) {
+		Item item = stack.getItem();
+		if (item instanceof ArmorItem) {
+			return ((ArmorItem) item).getArmorMaterial().getSoundEvent();
+		}
+
+		return null;
 	}
 
 }
