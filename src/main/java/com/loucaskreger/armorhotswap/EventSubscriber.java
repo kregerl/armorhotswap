@@ -54,14 +54,14 @@ public class EventSubscriber {
 				int armorIndexSlot = determineIndex(equipmentSlotType);
 				SoundEvent sound = getSoundEvent(stack);
 
-				if (stack.isEmpty() && !offhandStack.isEmpty()) {
+				if (armorIndexSlot < 0 && !offhandStack.isEmpty()) {
 					currentItemIndex = 40;
 					equipmentSlotType = MobEntity.getSlotForItemStack(offhandStack);
 					armorIndexSlot = determineIndex(equipmentSlotType);
 					sound = getSoundEvent(offhandStack);
 				}
 
-				if (armorIndexSlot != -1) {
+				if (armorIndexSlot > 0) {
 					if (sound != null) {
 						player.playSound(sound, 1.0f, 1.0f);
 					} else {

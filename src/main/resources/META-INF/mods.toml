@@ -4,7 +4,7 @@
 
 [[mods]]
 	modId="armorhotswap" 
-	version="1.0"
+	version="1.7"
 	displayName="Armor Hotswap"
 	displayURL="https://www.curseforge.com/minecraft/mc-mods/armor-hotswap" 
 	issueTrackerURL="" 
@@ -23,6 +23,6 @@
 [[dependencies.armorhotswap]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.1, 1.16.4]"
+    versionRange="[1.16.1, 1.16.5]"
     ordering="AFTER"
     side="BOTH"
