@@ -1,15 +1,26 @@
 package com.loucaskreger.armorhotswap;
 
+import java.util.Map;
+
+import com.loucaskreger.armorhotswap.config.ClientConfig;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerController;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.ClickType;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,29 +36,65 @@ public class EventSubscriber {
 			PlayerEntity player = mc.player;
 			PlayerController pc = mc.playerController;
 
-			ItemStack stack = player.inventory.getCurrentItem();
-			int currentItemIndex = player.inventory.mainInventory.indexOf(stack);
+			if (event.getHand() == Hand.MAIN_HAND) {
 
-			EquipmentSlotType equipmentSlotType = MobEntity.getSlotForItemStack(stack);
-			int armorIndexSlot = determineIndex(equipmentSlotType);
+				ItemStack stack = player.getHeldItemMainhand();
 
-			if (event.getHand() == Hand.MAIN_HAND && armorIndexSlot != -1) {
-				player.playSound(stack.getItem() == Items.ELYTRA ? SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA
-						: SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
-				pc.windowClick(mc.player.container.windowId, armorIndexSlot, currentItemIndex, ClickType.SWAP, player);
+				if (ClientConfig.preventCurses.get() && hasCurse(stack)) {
+					return;
+				}
+
+				if (mc.objectMouseOver.getType() == RayTraceResult.Type.ENTITY) {
+					return;
+				}
+
+				ItemStack offhandStack = player.getHeldItemOffhand();
+				int currentItemIndex = player.inventory.mainInventory.indexOf(stack);
+				EquipmentSlotType equipmentSlotType = MobEntity.getSlotForItemStack(stack);
+				int armorIndexSlot = determineIndex(equipmentSlotType);
+				SoundEvent sound = getSoundEvent(stack);
+
+				if (stack.isEmpty() && !offhandStack.isEmpty()) {
+					currentItemIndex = 40;
+					equipmentSlotType = MobEntity.getSlotForItemStack(offhandStack);
+					armorIndexSlot = determineIndex(equipmentSlotType);
+					sound = getSoundEvent(offhandStack);
+				}
+
+				if (armorIndexSlot != -1) {
+					if (sound != null) {
+						player.playSound(sound, 1.0f, 1.0f);
+					} else {
+						player.playSound(stack.getItem() == Items.ELYTRA ? SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA
+								: SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+					}
+					pc.windowClick(mc.player.container.windowId, armorIndexSlot, currentItemIndex, ClickType.SWAP,
+							player);
+				}
 			}
 
 		}
 	}
 
+	private static SoundEvent getSoundEvent(ItemStack stack) {
+		Item item = stack.getItem();
+		if (item instanceof ArmorItem) {
+			return ((ArmorItem) item).getArmorMaterial().getSoundEvent();
+		}
+
+		return null;
+	}
+
+	private static boolean hasCurse(ItemStack stack) {
+		Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
+		if (enchantments.containsKey(Enchantments.BINDING_CURSE)
+				|| enchantments.containsKey(Enchantments.VANISHING_CURSE)) {
+			return true;
+		}
+		return false;
+	}
+
 	/**
-	 * Inventory indicies go as follows: <br>
-	 * Crafting Output: 0 <br>
-	 * Crafting Input: 1-4 <br>
-	 * Armor: 5-8 <br>
-	 * Main Inventory: 9-35 <br>
-	 * Hotbar: 36-44 <br>
-	 * Offhand: 45 <br>
 	 * 
 	 * @param type
 	 * @return the index of the desired armor slot, otherwise -1

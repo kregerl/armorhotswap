@@ -1,11 +1,15 @@
 package com.loucaskreger.armorhotswap;
 
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.loucaskreger.armorhotswap.config.Config;
 
 @Mod(ArmorHotswap.MOD_ID)
 public class ArmorHotswap {
@@ -15,6 +19,8 @@ public class ArmorHotswap {
 	public ArmorHotswap() {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupCommon);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
+
+		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
 
 	}
 
