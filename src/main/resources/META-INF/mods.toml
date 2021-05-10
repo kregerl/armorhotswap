@@ -4,10 +4,10 @@
 
 [[mods]]
 	modId="armorhotswap" 
-	version="1.7"
+	version="1.8"
 	displayName="Armor Hotswap"
 	displayURL="https://www.curseforge.com/minecraft/mc-mods/armor-hotswap" 
-	issueTrackerURL="" 
+	issueTrackerURL="https://github.com/kregerl/armorhotswap/issues" 
 	logoFile="ArmorHotswapLogo.png"
 	credits=""
 	authors="AreUThreateningMe"
