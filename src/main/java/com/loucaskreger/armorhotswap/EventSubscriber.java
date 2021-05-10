@@ -40,6 +40,10 @@ public class EventSubscriber {
 
 				ItemStack stack = player.getHeldItemMainhand();
 
+				if (isBlacklisted(stack)) {
+					return;
+				}
+
 				if (ClientConfig.preventCurses.get() && hasCurse(stack)) {
 					return;
 				}
@@ -49,6 +53,9 @@ public class EventSubscriber {
 				}
 
 				ItemStack offhandStack = player.getHeldItemOffhand();
+				if (isBlacklisted(offhandStack)) {
+					return;
+				}
 				int currentItemIndex = player.inventory.mainInventory.indexOf(stack);
 				EquipmentSlotType equipmentSlotType = MobEntity.getSlotForItemStack(stack);
 				int armorIndexSlot = determineIndex(equipmentSlotType);
@@ -113,6 +120,15 @@ public class EventSubscriber {
 		default:
 			return -1;
 		}
+	}
+
+	private static boolean isBlacklisted(ItemStack stack) {
+		for (String registryName : ClientConfig.itemBlacklist.get()) {
+			if (stack.getItem().getRegistryName().toString().equals(registryName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

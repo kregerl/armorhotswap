@@ -9,6 +9,7 @@ public class Config {
 	public static final ForgeConfigSpec CLIENT_SPEC;
 
 	public static Boolean preventCurses;
+	public static List<? extends String> itemBlacklist;
 
 	static {
 		final Pair<ClientConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
@@ -18,6 +19,7 @@ public class Config {
 
 	public static void bakeConfig() {
 		preventCurses = ClientConfig.preventCurses.get();
+		itemBlacklist = ClientConfig.itemBlacklist.get();
 	}
 
 }
