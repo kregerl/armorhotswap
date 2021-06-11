@@ -1,9 +1,10 @@
-# Fabric Example Mod
+Armor Hotswap is a client side mod that allows players to quickly switch their armor.  
+Right click while holding a piece of armor to hotswap it with your current armor.  
+![Armor Hotswap](https://media.giphy.com/media/vKDDp1dh0fTNdMtLEM/giphy.gif)
 
-## Setup
+Players can use a config option to allow or disallow equipping armor with curse enchantments.
+By default players are NOT allowed to equip armor with curse enchantments.
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
-
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+Supported Versions  
+Fabric: 1.16.1 - 1.16.4  
+Forge: 1.15.2 and 1.16.1 - 1.16.5  
