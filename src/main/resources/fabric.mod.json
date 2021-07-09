@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "armorhotswap",
-  "version": "1.3",
+  "version": "1.4",
 
   "name": "ArmorHotswap",
   "description": "Right click while holding a piece of armor to swap it with the currently equipped armor",
@@ -27,7 +27,7 @@
   ],
 
   "depends": {
-    "fabricloader": ">=0.11.3",
+    "fabricloader": ">=0.11.6",
     "fabric": "*",
     "minecraft": "1.17.x",
     "java": ">=16"
