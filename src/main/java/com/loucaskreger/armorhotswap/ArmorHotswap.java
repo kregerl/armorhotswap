@@ -19,7 +19,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.registry.Registry;
 
 import java.util.Map;
@@ -53,10 +52,6 @@ public class ArmorHotswap implements ModInitializer {
                     return TypedActionResult.fail(stack);
                 }
                 if (Config.INSTANCE.preventCurses && hasCurse(stack)) {
-                    return TypedActionResult.fail(stack);
-                }
-
-                if (mc.crosshairTarget.getType() == HitResult.Type.ENTITY) {
                     return TypedActionResult.fail(stack);
                 }
 
