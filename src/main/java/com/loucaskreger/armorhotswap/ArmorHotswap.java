@@ -57,7 +57,7 @@ public class ArmorHotswap implements ModInitializer {
                 }
 
                 if (mc.crosshairTarget.getType() == HitResult.Type.ENTITY) {
-                    return TypedActionResult.fail(stack);
+                    return TypedActionResult.pass(stack);
                 }
 
                 EquipmentSlot equipmentSlotType = MobEntity.getPreferredEquipmentSlot(stack);
