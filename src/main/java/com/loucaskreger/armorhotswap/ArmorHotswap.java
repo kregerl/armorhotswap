@@ -38,7 +38,7 @@ public class ArmorHotswap implements ModInitializer {
             MinecraftClient mc = MinecraftClient.getInstance();
             ClientPlayerInteractionManager interactionManager = mc.interactionManager;
 
-            if (mc.mouse.wasRightButtonClicked()) {
+            if (mc.mouse.wasRightButtonClicked() && !player.isSneaking()) {
                 ItemStack stack;
                 int currentItemIndex;
                 if (hand == Hand.MAIN_HAND) {
