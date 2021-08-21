@@ -33,12 +33,14 @@ public class ArmorHotswap implements ModInitializer {
         onRightClick();
     }
 
+
     private static void onRightClick() {
         UseItemCallback.EVENT.register((player, world, hand) -> {
             MinecraftClient mc = MinecraftClient.getInstance();
             ClientPlayerInteractionManager interactionManager = mc.interactionManager;
 
-            if (mc.mouse.wasRightButtonClicked() && !player.isSneaking()) {
+
+            if (!player.isSneaking()) {
                 ItemStack stack;
                 int currentItemIndex;
                 if (hand == Hand.MAIN_HAND) {

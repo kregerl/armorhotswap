@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "armorhotswap",
-  "version": "1.6",
+  "version": "1.7",
 
   "name": "ArmorHotswap",
   "description": "Right click while holding a piece of armor to swap it with the currently equipped armor",
