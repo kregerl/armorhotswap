@@ -5,6 +5,4 @@ Right click while holding a piece of armor to hotswap it with your current armor
 Players can use a config option to allow or disallow equipping armor with curse enchantments.
 By default players are NOT allowed to equip armor with curse enchantments.
 
-Supported Versions  
-Fabric: 1.16.1 - 1.17  
-Forge: 1.15.2 and 1.16.1 - 1.16.5  
+
