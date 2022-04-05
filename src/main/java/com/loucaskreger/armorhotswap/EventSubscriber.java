@@ -104,7 +104,7 @@ public class EventSubscriber {
         Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
         if (enchantments.containsKey(Enchantments.BINDING_CURSE)
                 || enchantments.containsKey(Enchantments.VANISHING_CURSE)) {
-            return true;
+            return stack.getItem() instanceof ArmorItem;
         }
         return false;
     }
