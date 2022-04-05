@@ -3,7 +3,10 @@ package com.loucaskreger.armorhotswap;
 import com.loucaskreger.armorhotswap.config.ClientConfig;
 import net.minecraft.block.CarvedPumpkinBlock;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.multiplayer.PlayerController;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -17,14 +20,52 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.Map;
 
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL;
+
 @Mod.EventBusSubscriber(modid = ArmorHotswap.MOD_ID, value = Dist.CLIENT)
 public class EventSubscriber {
+
+    private static final KeyBinding key = new KeyBinding(ArmorHotswap.MOD_ID + ".key.modifier", GLFW_KEY_LEFT_CONTROL, ArmorHotswap.MOD_ID + ".categories.armorhotswap");
+
+    @SubscribeEvent
+    public static void onPlayerClickSlot(final GuiScreenEvent.MouseClickedEvent.Pre event) {
+        if (event.getButton() == 1 && key.isKeyDown()) {
+            Screen screen = event.getGui();
+            if (screen instanceof ContainerScreen<?>) {
+                ContainerScreen<?> containerScreen = (ContainerScreen<?>) screen;
+                int currentIndex = containerScreen.getSlotUnderMouse().getSlotIndex();
+                ItemStack stack = containerScreen.getSlotUnderMouse().getStack();
+                EquipmentSlotType equipmentSlotType = MobEntity.getSlotForItemStack(stack);
+                int armorIndexSlot = determineIndex(equipmentSlotType);
+
+                if (isBlacklisted(stack)) {
+                    return;
+                }
+
+                if (ClientConfig.preventCurses.get() && hasCurse(stack)) {
+                    return;
+                }
+
+                event.setCanceled(true);
+                Minecraft mc = Minecraft.getInstance();
+                PlayerController pc = mc.playerController;
+                PlayerEntity player = mc.player;
+
+                if (armorIndexSlot > 0) {
+                    pc.windowClick(player.container.windowId, armorIndexSlot, currentIndex, ClickType.SWAP,
+                            player);
+                }
+            }
+
+        }
+    }
 
     @SubscribeEvent
     public static void onPlayerRightClick(final InputEvent.ClickInputEvent event) {
