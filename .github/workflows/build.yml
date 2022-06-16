@@ -31,7 +31,6 @@ jobs:
         run: ./gradlew build
       - name: capture build artifacts
         if: ${{ runner.os == 'Linux' && matrix.java == '17' }} # Only upload artifacts built from latest java on one OS
-        uses: actions/upload-artifact@v2
+        uses: kittaakos/upload-artifact-as-is@v1
         with:
-          name: Artifacts
           path: build/libs/
