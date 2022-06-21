@@ -10,6 +10,7 @@
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/armor-hotswap",
+    "issues" : "https://github.com/kregerl/armorhotswap/issues",
     "sources": "https://github.com/kregerl/armorhotswap"
   },
 
