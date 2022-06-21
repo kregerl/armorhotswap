@@ -10,7 +10,8 @@
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/armor-hotswap",
-    "sources": "https://github.com/kregerl/armorhotswap"
+    "sources": "https://github.com/kregerl/armorhotswap",
+    "issues": "https://github.com/kregerl/armorhotswap/issues"
   },
 
   "license": "MIT",
