@@ -35,12 +35,6 @@
   },
   "suggests": {
     "another-mod": "*"
-  },
-
-  "custom": {
-    "modmenu": {
-        "badges": [ "client" ]
-    }
   }
 }
 
