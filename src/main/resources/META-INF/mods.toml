@@ -1,0 +1,28 @@
+modLoader = "javafml"
+loaderVersion = "[40,)"
+license = "MIT"
+
+[[mods]]
+modId = "armorhotswap"
+version = "1.13"
+displayName = "Armor Hotswap"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/armor-hotswap"
+issueTrackerURL = "https://github.com/kregerl/armorhotswap/issues"
+logoFile = "ArmorHotswapLogo.png"
+credits = ""
+authors = "AreUThreateningMe"
+description = '''
+	Right click while holding a piece of armor to swap it with the currently equipped armor'''
+[[dependencies.armorhotswap]]
+modId = "forge"
+mandatory = true
+versionRange = "[40,)"
+ordering = "AFTER"
+side = "CLIENT"
+[[dependencies.armorhotswap]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.18.2,1.19)"
+ordering = "AFTER"
+side = "BOTH"
+
