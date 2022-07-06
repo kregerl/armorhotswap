@@ -1,7 +1,9 @@
 package com.loucaskreger.armorhotswap;
 
 import com.loucaskreger.armorhotswap.config.ClientConfig;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -15,28 +17,68 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.CarvedPumpkinBlock;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.Map;
+
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL;
 
 @Mod.EventBusSubscriber(modid = ArmorHotswap.MOD_ID, value = Dist.CLIENT)
 public class EventSubscriber {
 
     private static final int MAX_ARMOR_INDEX = 5;
 
+    public static final KeyMapping key = new KeyMapping(ArmorHotswap.MOD_ID + ".key.modifier", GLFW_KEY_LEFT_CONTROL, ArmorHotswap.MOD_ID + ".categories.armorhotswap");
+
+
     @SubscribeEvent
-    public static void onPlayerRightClick(final PlayerInteractEvent.RightClickItem event) {
-        if (event.getWorld().isClientSide()) {
+    public static void onPlayerClickSlot(final GuiScreenEvent.MouseClickedEvent.Pre event) {
+        if (event.getButton() == 1 && key.isDown()) {
+
+            var screen = event.getGui();
+            if (screen instanceof AbstractContainerScreen abstractContainerScreen) {
+
+                var slotUnderMouse = abstractContainerScreen.getSlotUnderMouse();
+                var currentIndex = slotUnderMouse.getSlotIndex();
+                var currentStack = slotUnderMouse.getItem();
+                var slotType = Monster.getEquipmentSlotForItem(currentStack);
+                var armorIndexSlot = determineIndex(slotType);
+
+                if (isBlacklisted(currentStack)) {
+                    return;
+                }
+
+                if (ClientConfig.preventCurses.get() && hasCurse(currentStack)) {
+                    return;
+                }
+
+                event.setCanceled(true);
+                var mc = Minecraft.getInstance();
+                var pc = mc.gameMode;
+                var player = mc.player;
+
+                if (armorIndexSlot > 0) {
+                    pc.handleInventoryMouseClick(player.inventoryMenu.containerId, armorIndexSlot, currentIndex, ClickType.SWAP,
+                            player);
+                }
+
+            }
+
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerRightClick(final InputEvent.ClickInputEvent event) {
+        if (event.isUseItem()) {
 
             Minecraft mc = Minecraft.getInstance();
             var player = mc.player;
             var pc = mc.gameMode;
 
             if (event.getHand() == InteractionHand.MAIN_HAND && !player.isCrouching()) {
-                System.out.println("Clicked");
-
                 ItemStack stack = player.getMainHandItem();
 
                 if (isBlacklisted(stack)) {
