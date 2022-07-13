@@ -23,7 +23,7 @@
     ]
   },
   "mixins": [
-
+    "armorhotswap.mixins.json"
   ],
 
   "depends": {

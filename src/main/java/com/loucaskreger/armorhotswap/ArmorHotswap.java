@@ -1,5 +1,6 @@
 package com.loucaskreger.armorhotswap;
 
+import com.loucaskreger.armorhotswap.callbacks.KeyCallbacks;
 import com.loucaskreger.armorhotswap.config.Config;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
@@ -21,16 +22,29 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.registry.Registry;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Map;
 
 public class ArmorHotswap implements ModInitializer {
     public static final String MOD_ID = "armorhotswap";
+    public static boolean lCtrlPressed;
+
 
     @Override
     public void onInitialize() {
         Config.init();
         onRightClick();
+        KeyCallbacks.KEY_PRESSED_EVENT.register((key, modifier) -> {
+            if (key == GLFW.GLFW_KEY_LEFT_CONTROL) {
+                lCtrlPressed = true;
+            }
+        });
+        KeyCallbacks.KEY_RELEASED_EVENT.register((key, modifier) -> {
+            if (key == GLFW.GLFW_KEY_LEFT_CONTROL) {
+                lCtrlPressed = false;
+            }
+        });
     }
 
 
@@ -90,7 +104,7 @@ public class ArmorHotswap implements ModInitializer {
         return null;
     }
 
-    private static boolean hasCurse(ItemStack stack) {
+    public static boolean hasCurse(ItemStack stack) {
         Map<Enchantment, Integer> enchantments = EnchantmentHelper.get(stack);
         return enchantments.containsKey(Enchantments.BINDING_CURSE)
                 || enchantments.containsKey(Enchantments.VANISHING_CURSE);
@@ -109,7 +123,7 @@ public class ArmorHotswap implements ModInitializer {
      * @return the index of the desired armor slot, otherwise -1
      */
 
-    private static int determineIndex(EquipmentSlot type) {
+    public static int determineIndex(EquipmentSlot type) {
         return switch (type) {
             case HEAD -> 5;
             case CHEST -> 6;
