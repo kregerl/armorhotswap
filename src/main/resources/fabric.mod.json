@@ -1,8 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "armorhotswap",
-  "version": "1.7",
-
+  "version": "1.8",
   "name": "ArmorHotswap",
   "description": "Right click while holding a piece of armor to swap it with the currently equipped armor",
   "authors": [
@@ -12,10 +11,8 @@
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/armor-hotswap",
     "sources": "https://github.com/kregerl/armorhotswap"
   },
-
   "license": "MIT",
   "icon": "assets/armorhotswap/ArmorHotswapLogo.png",
-
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -23,9 +20,8 @@
     ]
   },
   "mixins": [
-
+    "armorhotswap.mixins.json"
   ],
-
   "depends": {
     "fabricloader": ">=0.11.3",
     "fabric": "*",
